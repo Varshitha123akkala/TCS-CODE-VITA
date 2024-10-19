@@ -1,0 +1,42 @@
+from collections import deque
+
+def is_valid(x, y, M, N, grid):
+    """Check if the cell (x, y) is within the grid and has value 0."""
+    return 0 <= x < M and 0 <= y < N and grid[x][y] == 0
+
+def bfs(grid, source, destination, move_rule, M, N):
+    # Directions based on the given move rule (forward, right, left, backward)
+    dx = [move_rule[0], move_rule[1], -move_rule[1], -move_rule[0]]
+    dy = [move_rule[1], -move_rule[0], move_rule[0], -move_rule[1]]
+
+    queue = deque([(source[0], source[1], 0)])  # (x, y, moves)
+    visited = set([(source[0], source[1])])  # Keep track of visited cells
+
+    while queue:
+        x, y, moves = queue.popleft()
+
+        # If we reach the destination, return the number of moves
+        if (x, y) == (destination[0], destination[1]):
+            return moves
+
+        # Explore all four possible directions
+        for i in range(4):
+            nx, ny = x + dx[i], y + dy[i]
+
+            # If the next cell is valid and not visited
+            if is_valid(nx, ny, M, N, grid) and (nx, ny) not in visited:
+                visited.add((nx, ny))
+                queue.append((nx, ny, moves + 1))
+
+    return -1  # If the destination is not reachable
+
+# Input Handling
+M, N = map(int, input().split())
+grid = [list(map(int, input().split())) for _ in range(M)]
+source = tuple(map(int, input().split()))
+destination = tuple(map(int, input().split()))
+move_rule = tuple(map(int, input().split()))
+
+# Find the minimum moves using BFS
+result = bfs(grid, source, destination, move_rule, M, N)
+print(result)
